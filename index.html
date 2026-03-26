@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emergency Ice Delivery | Ice in Less Than 90 Minutes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       DESIGN TOKENS
+    ============================================================ */
+    :root {
+      --color-primary:        #0D1B2A; /* Navy */
+      --color-accent:         #0076A3; /* Arctic Blue — light backgrounds only */
+      --color-accent-on-dark: #38BDF8; /* Glacier — dark backgrounds */
+      --color-dark:           #1E293B; /* Midnight body text */
+      --color-light:          #F0F7FF; /* Frost White page bg */
+      --color-surface:        #E8F3FB; /* Card/component bg */
+      --color-border:         #C8DCE8;
+      --color-steel-mid:      #4A6278; /* Muted/caption — light bg only */
+
+      --font-heading: 'Space Grotesk', sans-serif;
+      --font-body:    'DM Sans', sans-serif;
+
+      --radius: 6px;
+      --ease:   200ms ease;
+    }
+
+    /* ============================================================
+       RESET / BASE
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-dark);
+      background: var(--color-light);
+    }
+
+    img, video { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ============================================================
+       TYPOGRAPHY HELPERS
+    ============================================================ */
+    .eyebrow {
+      font-family: var(--font-heading);
+      font-size: 0.875rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .eyebrow--light { color: var(--color-accent-on-dark); }
+    .eyebrow--dark  { color: var(--color-accent); }
+
+    /* ============================================================
+       BUTTONS
+    ============================================================ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.875rem 2rem;
+      border-radius: var(--radius);
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: background var(--ease), color var(--ease), border-color var(--ease), transform var(--ease);
+      text-decoration: none;
+    }
+    .btn--primary {
+      background: var(--color-accent-on-dark);
+      color: var(--color-primary);
+      border-color: var(--color-accent-on-dark);
+    }
+    .btn--primary:hover {
+      background: #fff;
+      color: var(--color-primary);
+      border-color: #fff;
+      transform: translateY(-2px);
+    }
+    .btn--ghost {
+      background: transparent;
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+    .btn--ghost:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: #fff;
+      transform: translateY(-2px);
+    }
+
+    /* ============================================================
+       NAVBAR (placeholder)
+    ============================================================ */
+    .nav {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 5%;
+    }
+    .nav__logo img {
+      height: 44px;
+      width: auto;
+    }
+    .nav__links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav__links a {
+      font-family: var(--font-heading);
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.85);
+      transition: color var(--ease);
+    }
+    .nav__links a:hover { color: #fff; }
+    .nav__cta {
+      font-family: var(--font-heading);
+      font-size: 0.9375rem;
+      font-weight: 600;
+      padding: 0.625rem 1.375rem;
+      background: var(--color-accent-on-dark);
+      color: var(--color-primary);
+      border-radius: var(--radius);
+      transition: background var(--ease), transform var(--ease);
+    }
+    .nav__cta:hover { background: #fff; transform: translateY(-1px); }
+
+    /* ============================================================
+       HERO
+    ============================================================ */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Video background */
+    .hero__video-wrap {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+    .hero__video-wrap video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    /* Fallback bg for when no video is present */
+    .hero__video-wrap {
+      background: var(--color-primary);
+    }
+
+    /* Multi-layer overlay: darken + gradient from bottom */
+    .hero__overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        linear-gradient(
+          to bottom,
+          rgba(13, 27, 42, 0.55) 0%,
+          rgba(13, 27, 42, 0.45) 40%,
+          rgba(13, 27, 42, 0.75) 75%,
+          rgba(13, 27, 42, 0.92) 100%
+        );
+    }
+
+    /* Content sits above video + overlay */
+    .hero__inner {
+      position: relative;
+      z-index: 2;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 5% 5rem;
+      max-width: 860px;
+    }
+
+    .hero__eyebrow {
+      margin-bottom: 1.25rem;
+    }
+
+    .hero__headline {
+      font-family: var(--font-heading);
+      font-size: clamp(2.75rem, 5.5vw, 4.25rem);
+      font-weight: 700;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      color: #fff;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero__headline span {
+      color: var(--color-accent-on-dark);
+    }
+
+    .hero__sub {
+      font-size: clamp(1.05rem, 2vw, 1.2rem);
+      color: rgba(255, 255, 255, 0.8);
+      max-width: 560px;
+      margin-bottom: 2.25rem;
+      line-height: 1.6;
+    }
+
+    .hero__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    /* Trust bar */
+    .hero__trust {
+      position: relative;
+      z-index: 2;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(8px);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1.25rem 5%;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 2.5rem;
+    }
+    .hero__trust-item {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+    }
+    .hero__trust-icon {
+      font-size: 1.25rem;
+    }
+    .hero__trust-text {
+      font-family: var(--font-heading);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.9);
+    }
+    .hero__trust-text span {
+      color: var(--color-accent-on-dark);
+    }
+
+    /* ============================================================
+       DEV NOTE BANNER (remove before delivery)
+    ============================================================ */
+    .dev-note {
+      background: #fbbf24;
+      color: #1e293b;
+      font-family: monospace;
+      font-size: 0.8rem;
+      padding: 0.5rem 1rem;
+      text-align: center;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- DEV NOTE: Remove this banner before client delivery -->
+  <div class="dev-note">
+    🚧 PROTOTYPE — Hero Section Only | Edd: placeholder video slot active, swap in real footage when Blair delivers Drive folder
+  </div>
+
+  <!-- ============================================================
+       HERO
+  ============================================================ -->
+  <section class="hero">
+
+    <!-- VIDEO BACKGROUND -->
+    <!-- Slot for background video. Replace src with real footage from Blair's Google Drive. -->
+    <!-- Autoplay + muted required for browser autoplay policy. Loop for continuous bg. -->
+    <div class="hero__video-wrap">
+      <!--
+        PLACEHOLDER: uncomment + add real video when available
+        <video autoplay muted loop playsinline poster="assets/hero-poster.jpg">
+          <source src="assets/hero-bg.mp4" type="video/mp4" />
+        </video>
+      -->
+
+      <!-- Temporary: iceberg/ice imagery via CSS gradient + optional stock image -->
+      <div style="
+        position: absolute; inset: 0;
+        background:
+          radial-gradient(ellipse at 70% 40%, rgba(56,189,248,0.12) 0%, transparent 60%),
+          radial-gradient(ellipse at 20% 80%, rgba(0,118,163,0.15) 0%, transparent 55%),
+          linear-gradient(160deg, #0D1B2A 0%, #1E3A50 50%, #0D1B2A 100%);
+      "></div>
+    </div>
+
+    <!-- OVERLAY -->
+    <div class="hero__overlay"></div>
+
+    <!-- NAVBAR -->
+    <nav class="nav" aria-label="Main navigation">
+      <!-- TODO: Replace with actual logo SVG from brand/logo-white.svg -->
+      <a href="/" class="nav__logo" aria-label="Emergency Ice Delivery home">
+        <div style="
+          font-family: var(--font-heading);
+          font-weight: 700;
+          font-size: 1.25rem;
+          color: #fff;
+          letter-spacing: -0.01em;
+        ">
+          ❄️ Emergency Ice Delivery
+        </div>
+      </a>
+      <ul class="nav__links">
+        <li><a href="/services">Services</a></li>
+        <li><a href="/locations">Locations</a></li>
+        <li><a href="/our-story">Our Story</a></li>
+        <li><a href="/faq">FAQ</a></li>
+        <li><a href="/blog">Blog</a></li>
+      </ul>
+      <a href="#order" class="nav__cta">Order Now</a>
+    </nav>
+
+    <!-- HERO CONTENT -->
+    <div class="hero__inner">
+
+      <p class="eyebrow eyebrow--light hero__eyebrow">
+        Serving the Southeast — FL · SC · NC · GA
+      </p>
+
+      <h1 class="hero__headline">
+        Ice delivered to your door<br />
+        in <span>less than 90 minutes.</span>
+      </h1>
+
+      <p class="hero__sub">
+        When your ice machine fails in the middle of a rush, we show up. Restaurant-grade ice, on demand — so you can stay focused on your customers.
+      </p>
+
+      <div class="hero__actions">
+        <!-- CTA intentionally unlinked — Shopify buy button to be embedded later -->
+        <a href="#" class="btn btn--primary" aria-label="Order ice now">
+          Order Ice Now
+        </a>
+        <a href="#how-it-works" class="btn btn--ghost">
+          See How It Works
+        </a>
+      </div>
+
+    </div><!-- /.hero__inner -->
+
+    <!-- TRUST BAR -->
+    <div class="hero__trust" aria-label="Trust indicators">
+      <div class="hero__trust-item">
+        <span class="hero__trust-icon">⚡</span>
+        <span class="hero__trust-text"><span>90-min</span> guaranteed delivery</span>
+      </div>
+      <div class="hero__trust-item">
+        <span class="hero__trust-icon">⭐</span>
+        <span class="hero__trust-text">Trusted by <span>national chains</span></span>
+      </div>
+      <div class="hero__trust-item">
+        <span class="hero__trust-icon">❄️</span>
+        <span class="hero__trust-text">20 lb bags, restaurant-grade</span>
+      </div>
+      <div class="hero__trust-item">
+        <span class="hero__trust-icon">📍</span>
+        <span class="hero__trust-text">6 markets across the Southeast</span>
+      </div>
+    </div><!-- /.hero__trust -->
+
+  </section><!-- /.hero -->
+
+  <!-- ============================================================
+       NEXT SECTION PLACEHOLDER
+  ============================================================ -->
+  <section style="min-height: 200px; display: flex; align-items: center; justify-content: center; background: var(--color-light); color: var(--color-steel-mid); font-family: var(--font-heading); font-size: 1rem;">
+    ↓ Next section — pending Edd review
+  </section>
+
+</body>
+</html>
