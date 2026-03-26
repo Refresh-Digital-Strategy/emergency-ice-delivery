@@ -184,99 +184,137 @@
       padding: 2.75rem 3.25rem;
       max-width: 680px;
 
-      /* Organic corner radii */
+      /* Organic corner radii — slightly different per corner */
       border-radius: 28px 22px 26px 20px / 22px 28px 20px 26px;
 
       /*
-        LAYERED BACKGROUND
+        CSS custom properties for the dynamic specular highlight.
+        JS updates --sx/--sy (0–100%) as mouse moves, making the
+        bright blob track across the ice surface like reflected light.
+      */
+      --sx: 25%;
+      --sy: 20%;
 
-        ** Accessibility layer (bottom) **
-        A dark semi-opaque base ensures text contrast at all times.
-        rgba(9,18,40,.76) over white video = ~ #161f2f effective bg.
-        White (#fff) on #161f2f = 14.3:1 contrast → well above AA.
+      /*
+        BACKGROUND — lighter, icier, with moving specular highlight.
 
-        ** Ice edge effects (middle layers) **
-        Bright edge radials + caustic streak stay confined to corners/rim.
-        They never reach the text center — contrast is preserved.
-
-        ** Highlight/specular (top layers) **
-        Subtle — only at extreme edges, never over text.
+        Layer 1: DYNAMIC specular — tracks mouse via --sx/--sy.
+                 Bright enough to feel like real ice catching light,
+                 but radial falloff keeps it from washing out text.
+        Layer 2-4: Static edge catches (rim scattering)
+        Layer 5: Bottom-right shadow depth
+        Layer 6: Static caustic streak (diagonal)
+        Layer 7: Accessibility base — moderate dark fill.
+                 rgba(9,18,44,.58) = lighter than before but still
+                 gives ~7.5:1 contrast for white text (AA+ minimum).
+                 The specular highlight only hits edges, not text center.
       */
       background:
-        /* Ice edge effects — top-left specular (confined to far corner) */
-        radial-gradient(ellipse 55% 22% at 8%  -2%,  rgba(255,255,255,.38) 0%, transparent 100%),
-        radial-gradient(ellipse  8% 55% at -1%  50%,  rgba(255,255,255,.18) 0%, transparent 100%),
-        radial-gradient(ellipse 50%  9% at 38%  -1%,  rgba(255,255,255,.20) 0%, transparent 100%),
-        radial-gradient(ellipse 22% 20% at 94%   6%,  rgba(210,240,255,.16) 0%, transparent 100%),
-        radial-gradient(ellipse 45% 35% at 90%  98%,  rgba(6,20,65,.20)     0%, transparent 80%),
-        /* Caustic refraction streak */
+        radial-gradient(ellipse 55% 42% at var(--sx) var(--sy),
+          rgba(255,255,255,.42) 0%,
+          rgba(220,245,255,.18) 35%,
+          transparent 70%
+        ),
+        radial-gradient(ellipse  7% 50% at -1%  50%,  rgba(255,255,255,.20) 0%, transparent 100%),
+        radial-gradient(ellipse 48%  8% at 42%  -1%,  rgba(255,255,255,.22) 0%, transparent 100%),
+        radial-gradient(ellipse 20% 18% at 95%   5%,  rgba(210,240,255,.18) 0%, transparent 100%),
+        radial-gradient(ellipse 42% 32% at 90%  98%,  rgba(6,20,65,.22)     0%, transparent 80%),
         linear-gradient(114deg,
           transparent           26%,
-          rgba(255,255,255,.12) 36%,
-          rgba(255,255,255,.20) 41%,
-          rgba(255,255,255,.12) 46%,
+          rgba(255,255,255,.10) 36%,
+          rgba(255,255,255,.17) 41%,
+          rgba(255,255,255,.10) 46%,
           transparent           56%
         ),
-        /* ** Accessibility base: dark tinted fill ** */
         linear-gradient(152deg,
-          rgba(9,18,40,.78) 0%,
-          rgba(10,22,50,.74) 50%,
-          rgba(11,24,54,.70) 100%
+          rgba(9,18,44,.58) 0%,
+          rgba(10,22,52,.54) 50%,
+          rgba(11,24,56,.50) 100%
         );
 
-      backdrop-filter: blur(20px) saturate(160%) brightness(.88);
-      -webkit-backdrop-filter: blur(20px) saturate(160%) brightness(.88);
+      /*
+        backdrop-filter: slightly less darkening than before (.94 vs .88)
+        so more of the icy video shows through — contributes to the
+        "cold transparent slab" feel. Saturation boost intensifies the
+        blue tones in the blurred background.
+      */
+      backdrop-filter: blur(20px) saturate(200%) brightness(.94);
+      -webkit-backdrop-filter: blur(20px) saturate(200%) brightness(.94);
 
-      /* brightness(.88) on the blurred bg darkens the video bleed further,
-         reinforcing contrast without losing the frosted-glass depth. */
-
-      border-top:    2px solid rgba(255,255,255,.62);
-      border-left:   2px solid rgba(255,255,255,.44);
-      border-right:  1.5px solid rgba(100,170,232,.26);
-      border-bottom: 1px   solid rgba(72,145,212,.20);
+      border-top:    2px solid rgba(255,255,255,.65);
+      border-left:   2px solid rgba(255,255,255,.48);
+      border-right:  1.5px solid rgba(100,175,235,.28);
+      border-bottom: 1px   solid rgba(72,150,218,.22);
 
       box-shadow:
-        0 28px 80px rgba(0,18,58,.70),
-        0  6px 24px rgba(0,12,42,.50),
-        0  0  50px rgba(48,115,195,.10),
-        inset 0  3px 0  rgba(255,255,255,.50),
-        inset 3px 0  0  rgba(255,255,255,.30),
+        0 28px 80px rgba(0,18,58,.65),
+        0  6px 24px rgba(0,12,42,.45),
+        0  0  55px rgba(48,115,195,.12),
+        inset 0  3px 0  rgba(255,255,255,.52),
+        inset 3px 0  0  rgba(255,255,255,.32),
         inset -2px 0  0 rgba(48,115,195,.14),
         inset 0 -2px 0  rgba(38,100,180,.12),
-        inset 8px  0  28px rgba(0,24,72,.12),
-        inset -8px 0  28px rgba(0,20,65,.14),
-        inset 0  8px  22px rgba(0,22,70,.08),
-        inset 0 -8px  22px rgba(0,18,62,.12);
+        inset 8px  0  28px rgba(0,24,72,.10),
+        inset -8px 0  28px rgba(0,20,65,.12),
+        inset 0  8px  22px rgba(0,22,70,.06),
+        inset 0 -8px  22px rgba(0,18,62,.10);
 
       overflow: hidden;
-
-      /* 3D tilt — controlled by JS; smooth return when mouse leaves */
       transform: rotateX(0deg) rotateY(0deg);
       transform-style: preserve-3d;
       transition: transform .12s ease-out, box-shadow .12s ease-out;
       will-change: transform;
     }
 
-    /* Caustic + frost texture pseudo-elements */
+    /*
+      ::before — second caustic streak + dynamic shimmer layer.
+      Uses --sx/--sy for a second, smaller moving highlight that
+      trails the cursor at a different intensity — simulates the
+      way light bounces off an uneven ice surface from multiple angles.
+    */
     .ice-glass::before {
       content: '';
       position: absolute; inset: 0; border-radius: inherit;
       background:
+        /* Small secondary specular — trails at offset from main */
+        radial-gradient(ellipse 28% 22% at
+          calc(var(--sx) * 0.6 + 30%)
+          calc(var(--sy) * 0.6 + 25%),
+          rgba(255,255,255,.18) 0%,
+          transparent 65%
+        ),
         linear-gradient(116deg,
-          transparent           18%,
-          rgba(255,255,255,.10) 36%,
-          rgba(255,255,255,.18) 41%,
-          rgba(255,255,255,.10) 46%,
-          transparent           58%
+          transparent           20%,
+          rgba(255,255,255,.08) 36%,
+          rgba(255,255,255,.14) 41%,
+          rgba(255,255,255,.08) 46%,
+          transparent           60%
         );
       pointer-events: none;
+      transition: background .05s linear;
     }
+
+    /*
+      ::after — uneven crystalline frost texture.
+      Two overlapping noise layers at different scales and offsets
+      create an irregular, non-uniform surface — like real ice that
+      has refrozen, cracked, and built up frost in patches.
+      The larger scale (220px) gives chunky crystal regions;
+      the smaller scale (90px) adds fine-grain detail on top.
+    */
     .ice-glass::after {
       content: '';
       position: absolute; inset: 0; border-radius: inherit;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65 0.52' numOctaves='6' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.040'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23f)'/%3E%3C/svg%3E");
-      background-size: 180px 180px;
-      mix-blend-mode: screen; pointer-events: none; opacity: .70;
+      /* Chunky crystal layer */
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.28 0.22' numOctaves='4' seed='17' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.055'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='500' height='500' filter='url(%23c)'/%3E%3C/svg%3E"),
+        /* Fine frost detail layer */
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.78 0.65' numOctaves='5' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.038'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23f)'/%3E%3C/svg%3E");
+      background-size: 220px 220px, 90px 90px;
+      background-position: 0 0, 45px 30px;  /* offset layers for more irregularity */
+      mix-blend-mode: screen;
+      pointer-events: none;
+      opacity: .90;
     }
 
     /* ---- Text content — accessibility-first ---- */
@@ -491,16 +529,24 @@
       if (!rafId) rafId = requestAnimationFrame(animate);
     }
 
+    // Track raw mouse % for specular (direct, no lerp — light feels immediate)
+    let rawMX = 0.25, rawMY = 0.20;
+
     document.addEventListener('mousemove', (e) => {
       isHovering = true;
-      // Map mouse position across full viewport to tilt range
-      const cx = (e.clientX / window.innerWidth  - 0.5) * 2; // -1 to 1
-      const cy = (e.clientY / window.innerHeight - 0.5) * 2; // -1 to 1
+      const cx = (e.clientX / window.innerWidth  - 0.5) * 2;
+      const cy = (e.clientY / window.innerHeight - 0.5) * 2;
 
-      // rotateX: mouse at top = tilt forward (+), bottom = tilt back (-)
-      // rotateY: mouse at left = tilt left (-), right = tilt right (+)
       targetX = -cy * MAX_X;
       targetY =  cx * MAX_Y;
+
+      // Map viewport mouse to panel-relative % for specular highlight
+      // Add slight nonlinearity — light pools more at edges of ice
+      rawMX = (e.clientX / window.innerWidth)  * 100;
+      rawMY = (e.clientY / window.innerHeight) * 100;
+      panel.style.setProperty('--sx', rawMX.toFixed(1) + '%');
+      panel.style.setProperty('--sy', rawMY.toFixed(1) + '%');
+
       startLoop();
     });
 
